@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Sudoku2</string>
+    <string name="btnNum1">1</string>
+    <string name="btnNum2">2</string>
+    <string name="btnNum3">3</string>
+    <string name="btnNum4">4</string>
+    <string name="btnNum5">5</string>
+    <string name="btnNum6">6</string>
+    <string name="btnNum7">7</string>
+    <string name="btnNum8">8</string>
+    <string name="btnNum9">9</string>
+    <string name="btnDelete">Удалить</string>
+    <string name="btnCheck">Проверить</string>
+    <string name="btnMenu">Menu</string>
+    <string name="btnPause">Pause</string>
+    <string name="pauseImage">Pause image</string>
+</resources>

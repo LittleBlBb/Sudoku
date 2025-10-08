@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageButton
+        android:id="@+id/btnMenu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/btnMenu"
+        android:src="@android:drawable/ic_menu_more"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnPause"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/btnPause"
+        android:src="@android:drawable/ic_media_pause"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck" />
+
+
+    <GridLayout
+        android:id="@+id/topSquare"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:columnCount="3"
+        android:rowCount="3"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/controlPanel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        android:background="#00000000" />
+
+    <FrameLayout
+        android:id="@+id/pauseOverlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:background="#80000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/pauseImage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/pauseImage"
+            android:scaleType="centerInside"
+            android:src="@drawable/pause_image" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/controlPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="8dp"
+        app:layout_constraintTop_toBottomOf="@id/topSquare"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <GridLayout
+            android:id="@+id/numGrid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnCount="3"
+            android:rowCount="3"
+            android:useDefaultMargins="true"
+            android:alignmentMode="alignMargins"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center">
+
+            <Button
+                android:id="@+id/btnNum1"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum1" />
+
+            <Button
+                android:id="@+id/btnNum2"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum2" />
+
+            <Button
+                android:id="@+id/btnNum3"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum3" />
+
+            <Button
+                android:id="@+id/btnNum4"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum4" />
+
+            <Button
+                android:id="@+id/btnNum5"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum5" />
+
+            <Button
+                android:id="@+id/btnNum6"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum6" />
+
+            <Button
+                android:id="@+id/btnNum7"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum7" />
+
+            <Button
+                android:id="@+id/btnNum8"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum8" />
+
+            <Button
+                android:id="@+id/btnNum9"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="@string/btnNum9" />
+        </GridLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btnDelete" />
+
+            <Space
+                android:layout_width="16dp"
+                android:layout_height="0dp" />
+
+            <Button
+                android:id="@+id/btnCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btnCheck" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
