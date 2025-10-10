@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.sudoku2.level.level;
 
@@ -169,27 +171,51 @@ public class MainActivity extends AppCompatActivity {
             android.widget.PopupMenu popup = new android.widget.PopupMenu(MainActivity.this, v);
             popup.getMenu().add("Заново");
             popup.getMenu().add("Статистика");
-            //Выход
             popup.getMenu().add("Выйти из аккаунта");
+            MenuItem darkTheme = popup.getMenu().add("Темная тема");
+            darkTheme.setCheckable(true);
+
+            int currentMode = AppCompatDelegate.getDefaultNightMode();
+            darkTheme.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
 
             popup.setOnMenuItemClickListener(item -> {
                 String title = item.getTitle().toString();
-                if ("Заново".equals(title)) {
-                    startNewGame();
-                    Toast.makeText(this, "Игра начата заново", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if ("Статистика".equals(title)) {
-                    boolean wasPausedBefore = isPaused;
-                    pauseGame();
-                    showStatisticsDialog(() -> {
-                        if (!wasPausedBefore) resumeGame();
-                    });
-                    return true;
+                switch (title) {
+                    case "Заново":
+                        startNewGame();
+                        Toast.makeText(this, "Игра начата заново", Toast.LENGTH_SHORT).show();
+                        return true;
+                    case "Статистика":
+                        boolean wasPausedBefore = isPaused;
+                        pauseGame();
+                        showStatisticsDialog(() -> {
+                            if (!wasPausedBefore) resumeGame();
+                        });
+                        return true;
+
+                    //Выход обработка
+                    case "Выйти из аккаунта":
+                        logOut();
+                        break;
+
+                    case "Темная тема":
+                        boolean isDarkNow = darkTheme.isChecked();
+                        boolean newIsDark = !isDarkNow;
+
+                        darkTheme.setChecked(newIsDark);
+                        SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
+                        prefs.edit().putInt("night_mode", newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO).apply();
+                        AppCompatDelegate.setDefaultNightMode(newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                        recreate();
+
+                        if (newIsDark){
+                            Toast.makeText(MainActivity.this, "Темная тема", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this,"Светлая тема", Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
                 }
-                //Выход обработка
-                else if ("Выйти из аккаунта".equals(title)){
-                    logOut();
-                }
+
                 return false;
             });
             popup.show();
