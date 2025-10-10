@@ -1,5 +1,7 @@
 package com.example.sudoku2;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -167,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
             android.widget.PopupMenu popup = new android.widget.PopupMenu(MainActivity.this, v);
             popup.getMenu().add("Заново");
             popup.getMenu().add("Статистика");
+            //Выход
+            popup.getMenu().add("Выйти из аккаунта");
+
             popup.setOnMenuItemClickListener(item -> {
                 String title = item.getTitle().toString();
                 if ("Заново".equals(title)) {
@@ -180,6 +185,10 @@ public class MainActivity extends AppCompatActivity {
                         if (!wasPausedBefore) resumeGame();
                     });
                     return true;
+                }
+                //Выход обработка
+                else if ("Выйти из аккаунта".equals(title)){
+                    logOut();
                 }
                 return false;
             });
@@ -577,5 +586,18 @@ public class MainActivity extends AppCompatActivity {
     private int dpToPx(int dp) {
         float d = getResources().getDisplayMetrics().density;
         return Math.round(dp * d);
+    }
+
+
+    private void logOut(){
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        prefs.edit()
+                .putBoolean("loggedIn", false)
+                .putString("username", null)
+                .putString("password", null)
+                .apply();
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
+
     }
 }

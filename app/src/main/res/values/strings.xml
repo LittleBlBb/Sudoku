@@ -14,4 +14,11 @@
     <string name="btnMenu">Menu</string>
     <string name="btnPause">Pause</string>
     <string name="pauseImage">Pause image</string>
+    <string name="loginHint">Логин</string>
+    <string name="Login">Войти</string>
+    <string name="Registration">Регистрация</string>
+    <string name="alreadyHaveAcc">Уже есть аккаунт?</string>
+    <string name="Register">Зарегистрироваться</string>
+    <string name="passConfirm">Подтвердите пароль</string>
+    <string name="passwordHint">Пароль</string>
 </resources>

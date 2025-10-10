@@ -17,7 +17,7 @@
             android:id="@+id/usernameInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Логин"/>
+            android:hint="@string/Login"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -33,7 +33,7 @@
             android:id="@+id/passwordInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Пароль"
+            android:hint="@string/passwordHint"
             android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -50,13 +50,13 @@
             android:id="@+id/confirmInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Подтвердите пароль"
+            android:hint="@string/passConfirm"
             android:inputType="textPassword"/>
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnRegister"
-        android:text="Зарегистрироваться"
+        android:text="@string/Register"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/confirmLayout"
@@ -66,7 +66,7 @@
 
     <Button
         android:id="@+id/btnGoLogin"
-        android:text="Уже есть аккаунт?"
+        android:text="@string/alreadyHaveAcc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/btnRegister"

@@ -11,15 +11,12 @@ public class SplashScreenActivity extends ComponentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // ✅ Устанавливаем SplashScreen API (импорт из androidx)
         SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
 
-        // Проверяем, вошёл ли пользователь
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         boolean loggedIn = prefs.getBoolean("loggedIn", false);
 
-        // Переход к нужному экрану
         if (loggedIn) {
             startActivity(new Intent(this, MainActivity.class));
         } else {

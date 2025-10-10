@@ -37,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     private void validateAndLogin(View v){
         String username = usernameInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
-
         boolean valid = true;
 
         if (username.isEmpty()){
@@ -60,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String savedUser = prefs.getString("username", null);
         String savedPass = prefs.getString("password", null);
-
         if (username.equals(savedUser) && password.equals(savedPass)){
             prefs.edit().putBoolean("loggedIn", true).apply();
             Snackbar.make(v, "Добро пожаловать!", Snackbar.LENGTH_SHORT).show();

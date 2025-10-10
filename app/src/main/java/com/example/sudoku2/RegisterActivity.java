@@ -68,6 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (!valid) return;
 
+
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         prefs.edit()
                 .putString("username", username)
