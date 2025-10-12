@@ -16,39 +16,25 @@
     <string name="dark_theme">dark theme</string>
 
     <!--    Toasts    -->
+    <string name="game_restarted">game restarted</string>
     <string name="light_theme_enabled">light theme enabled</string>
     <string name="dark_theme_enabled">dark theme enabled</string>
-    <string name="game_restarted">game restarted</string>
     <string name="choose_sheet">first choose sheet</string>
     <string name="errors_found">Errors found</string>
     <string name="empty_cells_error">No errors found, but there are empty cells</string>
     <string name="correct_decision">The decision is correct!</string>
 
-
     <!--    Login/RegisterActivity   -->
     <string name="welcome">Welcome!</string>
     <string name="incorrect_login_or_password">Incorrect login or password</string>
     <string name="registration_successful">Registration successful!</string>
+    <string name="passwords_match_error">The passwords don\'t match</string>
     <string name="enter_password_error">Enter your password</string>
     <string name="enter_login_error">Enter your login</string>
-    <string name="passwords_match_error">The passwords don\'t match</string>
 
     <!--    Statistic   -->
     <string name="games_count_statistics">Games count</string>
     <string name="moves_count_statistics">Moves count</string>
     <string name="game_time_statistics">Game time</string>
-
-    <!--    Constants   -->
-    <string name="language_russian" translatable="false">russian</string>
-    <string name="language_english" translatable="false">english</string>
-    <string name="app_name" translatable="false">Sudoku</string>
-    <string name="btnNum1" translatable="false">1</string>
-    <string name="btnNum2" translatable="false">2</string>
-    <string name="btnNum3" translatable="false">3</string>
-    <string name="btnNum4" translatable="false">4</string>
-    <string name="btnNum5" translatable="false">5</string>
-    <string name="btnNum6" translatable="false">6</string>
-    <string name="btnNum7" translatable="false">7</string>
-    <string name="btnNum8" translatable="false">8</string>
-    <string name="btnNum9" translatable="false">9</string>
+    <string name="loginHint">login</string>
 </resources>

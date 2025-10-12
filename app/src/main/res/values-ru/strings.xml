@@ -1,0 +1,39 @@
+<resources>
+    <string name="btnDelete">Удалить</string>
+    <string name="btnCheck">Проверить</string>
+    <string name="btnMenu">Меню</string>
+    <string name="btnPause">Пауза</string>
+    <string name="pauseImage">Картинка паузы</string>
+    <string name="Login">Логин</string>
+    <string name="Registration">Регистрация</string>
+    <string name="alreadyHaveAcc">Уже есть аккаунт?</string>
+    <string name="Register">Зарегистрироваться</string>
+    <string name="passConfirm">Подтвердите пароль</string>
+    <string name="passwordHint">Пароль</string>
+    <string name="logout">Выйти</string>
+    <string name="statistics">Статистика</string>
+    <string name="restart">Заново</string>
+    <string name="dark_theme">темная тема</string>
+
+    <!--    Toasts     -->
+    <string name="light_theme_enabled">светлая тема включена</string>
+    <string name="dark_theme_enabled">темная тема включена</string>
+    <string name="game_restarted">игра перезапущена</string>
+    <string name="choose_sheet">сначала выберите ячейку</string>
+    <string name="errors_found">Найдены ошибки</string>
+    <string name="empty_cells_error">Ошибок не найдено, но есть пустые клетки</string>
+    <string name="correct_decision">Решение верно!</string>
+
+    <!--    Login/RegisterActivity   -->
+    <string name="welcome">Добро пожаловать!</string>
+    <string name="incorrect_login_or_password">Неверный логин или пароль</string>
+    <string name="enter_password_error">Введите пароль</string>
+    <string name="enter_login_error">Введите логин</string>
+    <string name="passwords_match_error">Пароли не совпадают</string>
+    <string name="registration_successful">Регистрация успешна!</string>
+
+    <!--    Statistic   -->
+    <string name="games_count_statistics">Игры</string>
+    <string name="moves_count_statistics">Ходы</string>
+    <string name="game_time_statistics">Время игры</string>
+</resources>

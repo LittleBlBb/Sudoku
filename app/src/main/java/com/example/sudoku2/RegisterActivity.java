@@ -16,7 +16,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private TextInputLayout usernameLayout, passwordLayout, confirmLayout;
     private TextInputEditText usernameInput, passwordInput, confirmInput;
-    private Button btnRegister, btnGoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +28,8 @@ public class RegisterActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
         confirmInput = findViewById(R.id.confirmInput);
-        btnRegister = findViewById(R.id.btnRegister);
-        btnGoLogin = findViewById(R.id.btnGoLogin);
+        Button btnRegister = findViewById(R.id.btnRegister);
+        Button btnGoLogin = findViewById(R.id.btnGoLogin);
 
         btnRegister.setOnClickListener(this::validateAndRegister);
         btnGoLogin.setOnClickListener(v ->
@@ -46,21 +45,21 @@ public class RegisterActivity extends AppCompatActivity {
         boolean valid = true;
 
         if (username.isEmpty()) {
-            usernameLayout.setError("Введите логин");
+            usernameLayout.setError(getString(R.string.enter_login_error));
             valid = false;
         } else {
             usernameLayout.setError(null);
         }
 
         if (password.isEmpty()) {
-            passwordLayout.setError("Введите пароль");
+            passwordLayout.setError(getString(R.string.enter_password_error));
             valid = false;
         } else {
             passwordLayout.setError(null);
         }
 
         if (!password.equals(confirm)) {
-            confirmLayout.setError("Пароли не совпадают");
+            confirmLayout.setError(getString(R.string.passwords_match_error));
             valid = false;
         } else {
             confirmLayout.setError(null);
@@ -75,7 +74,7 @@ public class RegisterActivity extends AppCompatActivity {
                 .putString("password", password)
                 .apply();
 
-        Snackbar.make(v, "Регистрация успешна!", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(v, getString(R.string.registration_successful), Snackbar.LENGTH_SHORT).show();
 
         startActivity(new Intent(this, LoginActivity.class));
         finish();

@@ -1,7 +1,12 @@
 package com.example.sudoku2;
 
+import java.util.Locale;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -50,13 +55,34 @@ public class MainActivity extends AppCompatActivity {
     private long pauseStartMillis = 0L;
     private long accumulatedPauseMillis = 0L;
 
-    private int[][] board = new int[9][9];
-    private boolean[][] fixed = new boolean[9][9];
+    @Override
+    protected void attachBaseContext(Context base) {
+        SharedPreferences prefs = base.getSharedPreferences("Prefs", Context.MODE_PRIVATE);
+        String savedLocale = prefs.getString("Locale", "en");
+
+        super.attachBaseContext(updateLocale(base, savedLocale));
+    }
+
+    private Context updateLocale(Context context, String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+
+        Resources resources = context.getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        return context.createConfigurationContext(config);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
+        int savedMode = prefs.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        AppCompatDelegate.setDefaultNightMode(savedMode);
+
         setContentView(R.layout.activity_main);
+
 
         topSquare = findViewById(R.id.topSquare);
         numGrid = findViewById(R.id.numGrid);
@@ -80,6 +106,13 @@ public class MainActivity extends AppCompatActivity {
         if (pauseImage != null) pauseImage.setOnClickListener(v -> resumeGame());
     }
 
+    private void setLocale(String lang) {
+        SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
+        prefs.edit().putString("Locale", lang).apply();
+
+        recreate();
+    }
+
 
     private void startNewGame() {
         gamesPlayed++;
@@ -92,8 +125,6 @@ public class MainActivity extends AppCompatActivity {
         generateBoard();
 
         loadLevel(1);
-
-//        generateRandomLevel();
 
         setupNumberButtons();
         setupDeleteButton();
@@ -162,67 +193,77 @@ public class MainActivity extends AppCompatActivity {
         applyPuzzle(null);
     }
 
-
-    //================ ГЕНЕРИМ КНОПКУ МЕНЮ ===================
-
     private void setupMenu() {
         if (btnMenu == null) return;
         btnMenu.setOnClickListener(v -> {
             android.widget.PopupMenu popup = new android.widget.PopupMenu(MainActivity.this, v);
-            popup.getMenu().add("Заново");
-            popup.getMenu().add("Статистика");
-            popup.getMenu().add("Выйти из аккаунта");
-            MenuItem darkTheme = popup.getMenu().add("Темная тема");
-            darkTheme.setCheckable(true);
+            popup.getMenu().add(getString(R.string.restart));
+            popup.getMenu().add(getString(R.string.statistics));
+            popup.getMenu().add(getString(R.string.logout));
 
+            MenuItem darkTheme = popup.getMenu().add(getString(R.string.dark_theme));
+            darkTheme.setCheckable(true);
             int currentMode = AppCompatDelegate.getDefaultNightMode();
             darkTheme.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
 
+            MenuItem eng = popup.getMenu().add(getString(R.string.language_english));
+            MenuItem rus = popup.getMenu().add(getString(R.string.language_russian));
+            eng.setCheckable(true);
+            rus.setCheckable(true);
+
+            SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
+            String currentLocale = prefs.getString("Locale", "en");
+            eng.setChecked(currentLocale.equals("en"));
+            rus.setChecked(currentLocale.equals("ru"));
+
             popup.setOnMenuItemClickListener(item -> {
                 String title = item.getTitle().toString();
-                switch (title) {
-                    case "Заново":
-                        startNewGame();
-                        Toast.makeText(this, "Игра начата заново", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case "Статистика":
-                        boolean wasPausedBefore = isPaused;
-                        pauseGame();
-                        showStatisticsDialog(() -> {
-                            if (!wasPausedBefore) resumeGame();
-                        });
-                        return true;
 
-                    //Выход обработка
-                    case "Выйти из аккаунта":
-                        logOut();
-                        break;
-
-                    case "Темная тема":
-                        boolean isDarkNow = darkTheme.isChecked();
-                        boolean newIsDark = !isDarkNow;
-
-                        darkTheme.setChecked(newIsDark);
-                        SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
-                        prefs.edit().putInt("night_mode", newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO).apply();
-                        AppCompatDelegate.setDefaultNightMode(newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-                        recreate();
-
-                        if (newIsDark){
-                            Toast.makeText(MainActivity.this, "Темная тема", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this,"Светлая тема", Toast.LENGTH_SHORT).show();
-                        }
-                        return true;
+                if (title.equals(getString(R.string.restart))){
+                    startNewGame();
+                    Toast.makeText(this, getString(R.string.game_restarted), Toast.LENGTH_SHORT).show();
+                    return true;
                 }
+                else if (title.equals(getString(R.string.statistics))){
+                    boolean wasPausedBefore = isPaused;
+                    pauseGame();
+                    showStatisticsDialog(() -> {
+                        if (!wasPausedBefore) resumeGame();
+                    });
+                    return true;
+                } else if (title.equals(getString(R.string.logout))){
+                    logOut();
+                } else if (title.equals(getString(R.string.dark_theme))){
+                    boolean isDarkNow = darkTheme.isChecked();
+                    boolean newIsDark = !isDarkNow;
 
+                    darkTheme.setChecked(newIsDark);
+                    SharedPreferences prefsTheme = getSharedPreferences("Prefs", MODE_PRIVATE);
+                    prefsTheme.edit().putInt("night_mode", newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO).apply();
+                    AppCompatDelegate.setDefaultNightMode(newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                    recreate();
+
+                    if (newIsDark) {
+                        Toast.makeText(MainActivity.this, getString(R.string.dark_theme_enabled), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, getString(R.string.light_theme_enabled), Toast.LENGTH_SHORT).show();
+                    }
+                    return true;
+                } else if (title.equals(getString(R.string.language_english))) {
+                    setLocale("en");
+                    Toast.makeText(this, getString(R.string.language_english), Toast.LENGTH_SHORT).show();  // "Language: English"
+                    return true;
+                } else if (title.equals(getString(R.string.language_russian))){
+                    setLocale("ru");
+                    Toast.makeText(this, getString(R.string.language_russian), Toast.LENGTH_SHORT).show();  // "Язык: Русский"
+                    return true;
+                }
                 return false;
             });
             popup.show();
         });
     }
 
-    //================ ГЕНЕРИМ КНОПКУ ПАУЗЫ ===================
 
     private void setupPauseButton() {
         if (btnPause == null) return;
@@ -249,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         updatePauseIcon();
-//        Toast.makeText(this, "Игра на паузе", Toast.LENGTH_SHORT).show();
+
     }
 
     private void resumeGame() {
@@ -297,12 +338,12 @@ public class MainActivity extends AppCompatActivity {
         long minutes = seconds / 60;
         seconds = seconds % 60;
 
-        String msg = "Игры: " + gamesPlayed + "\n"
-                + "Ходов в текущей игре: " + movesMade + "\n"
-                + "Время текущей игры: " + minutes + " мин " + seconds + " сек";
+        String msg = getString(R.string.games_count_statistics) + ": " + gamesPlayed + "\n"
+                + getString(R.string.moves_count_statistics) + ": " + movesMade + "\n"
+                + getString(R.string.game_time_statistics) + ": " + minutes + " мин " + seconds + " сек";
 
         AlertDialog dlg = new AlertDialog.Builder(this)
-                .setTitle("Статистика")
+                .setTitle(getString(R.string.statistics))
                 .setMessage(msg)
                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                 .create();
@@ -313,8 +354,6 @@ public class MainActivity extends AppCompatActivity {
 
         dlg.show();
     }
-
-    //================ ГЕНЕРИМ ИГРОВУЮ ДОСКУ ===================
 
     private void generateBoard() {
         topSquare.removeAllViews();
@@ -428,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     cellTexts[selectedRow][selectedCol].setText("");
                 } else {
-                    Toast.makeText(this, "Сначала выберите ячейку", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.choose_sheet), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -588,12 +627,12 @@ public class MainActivity extends AppCompatActivity {
                 TextView tv = cellTexts[r][c];
                 if (tv != null) tv.setTextColor(android.graphics.Color.RED);
             }
-            Toast.makeText(this, "Найдены ошибки", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.errors_found), Toast.LENGTH_LONG).show();
             return;
         }
 
         if (hasEmpty) {
-            Toast.makeText(this, "Ошибок не найдено, но есть пустые клетки", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.empty_cells_error), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Решение верно!", Toast.LENGTH_LONG).show();
         }

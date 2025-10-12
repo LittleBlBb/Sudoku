@@ -15,7 +15,6 @@ import android.widget.Button;
 public class LoginActivity extends AppCompatActivity {
     private TextInputLayout usernameLayout, passwordLayout;
     private TextInputEditText usernameInput, passwordInput;
-    private Button btnLogin, btnGoRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -26,8 +25,8 @@ public class LoginActivity extends AppCompatActivity {
         passwordLayout = findViewById(R.id.passwordLayout);
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
-        btnLogin = findViewById(R.id.btnLogin);
-        btnGoRegister = findViewById(R.id.btnGoRegister);
+        Button btnLogin = findViewById(R.id.btnLogin);
+        Button btnGoRegister = findViewById(R.id.btnGoRegister);
 
         btnLogin.setOnClickListener(v -> validateAndLogin(v));
         btnGoRegister.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
@@ -40,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean valid = true;
 
         if (username.isEmpty()){
-            usernameLayout.setError("Введите логин");
+            usernameLayout.setError(getString(R.string.enter_login_error));
             valid = false;
         }
         else{
@@ -48,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (password.isEmpty()){
-            passwordLayout.setError("Введите пароль");
+            passwordLayout.setError(getString(R.string.enter_password_error));
             valid = false;
         }
         else {
@@ -61,12 +60,12 @@ public class LoginActivity extends AppCompatActivity {
         String savedPass = prefs.getString("password", null);
         if (username.equals(savedUser) && password.equals(savedPass)){
             prefs.edit().putBoolean("loggedIn", true).apply();
-            Snackbar.make(v, "Добро пожаловать!", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(v, getString(R.string.welcome), Snackbar.LENGTH_SHORT).show();
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
         else {
-            Snackbar.make(v, "Неверный логин или пароль", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(v, getString(R.string.incorrect_login_or_password), Snackbar.LENGTH_SHORT).show();
         }
     }
 }
