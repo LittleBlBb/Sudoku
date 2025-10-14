@@ -14,6 +14,8 @@
     <string name="statistics">statistics</string>
     <string name="restart">restart</string>
     <string name="dark_theme">dark theme</string>
+    <string name="appLogo">App Logo</string>
+    <string name="pauseMessage">Game paused</string>
 
     <!--    Toasts    -->
     <string name="light_theme_enabled">light theme enabled</string>
@@ -26,6 +28,8 @@
 
 
     <!--    Login/RegisterActivity   -->
+    <string name="enter">Enter</string>
+    <string name="createAccount">Create account</string>
     <string name="welcome">Welcome!</string>
     <string name="incorrect_login_or_password">Incorrect login or password</string>
     <string name="registration_successful">Registration successful!</string>

@@ -7,41 +7,37 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.sudoku2.level.level;
+import com.google.android.material.appbar.MaterialToolbar;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private GridLayout topSquare;
-    private GridLayout numGrid;
     private LinearLayout controlPanel;
     private Button btnDelete, btnCheck;
-    private ImageButton btnMenu, btnPause;
     private FrameLayout pauseOverlay;
-    private ImageView pauseImage;
-
     private FrameLayout[][] cells = new FrameLayout[9][9];
     private TextView[][] cellTexts = new TextView[9][9];
-
+    TextView pauseText;
     private boolean[][] isFixed = new boolean[9][9];
 
     private int selectedRow = -1;
@@ -74,6 +70,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        updatePauseMenuIcon(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_pause) {
+            if (isPaused) {
+                resumeGame();
+            } else {
+                pauseGame();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -83,27 +99,30 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        setSupportActionBar(findViewById(R.id.toolbar));
+        invalidateOptionsMenu();
 
+        pauseOverlay = findViewById(R.id.pauseOverlay);
         topSquare = findViewById(R.id.topSquare);
-        numGrid = findViewById(R.id.numGrid);
-        controlPanel = findViewById(R.id.controlPanel);
+        controlPanel = findViewById(R.id.controlPanelInner);
         btnDelete = findViewById(R.id.btnDelete);
         btnCheck = findViewById(R.id.btnCheck);
-        btnMenu = findViewById(R.id.btnMenu);
-        btnPause = findViewById(R.id.btnPause);
-        pauseOverlay = findViewById(R.id.pauseOverlay);
-        pauseImage = findViewById(R.id.pauseImage);
+        pauseText = findViewById(R.id.pauseText);
 
-        if (pauseOverlay != null) pauseOverlay.setVisibility(View.GONE);
+        if (pauseOverlay != null) {
+            pauseOverlay.setOnClickListener(v -> resumeGame());
+        }
+        if (pauseText != null) {
+            pauseText.setOnClickListener(v -> resumeGame());
+        }
+
+        pauseOverlay.setVisibility(View.GONE);
+
         topSquare.setBackgroundColor(0xFFFFFFFF);
 
         startNewGame();
 
         setupMenu();
-        setupPauseButton();
-
-        if (pauseOverlay != null) pauseOverlay.setOnClickListener(v -> resumeGame());
-        if (pauseImage != null) pauseImage.setOnClickListener(v -> resumeGame());
     }
 
     private void setLocale(String lang) {
@@ -144,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
                 applyPuzzle(level.LEVEL1.getGrid());
                 break;
             case 2:
-//                generateRandomLevel();
                 break;
             default:
                 clearPuzzle();
@@ -159,7 +177,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void applyPuzzle(int[][] puzzle) {
-        for (int r=0;r<9;r++) for (int c=0;c<9;c++) isFixed[r][c] = false;
+        for (int r = 0; r < 9; r++) {
+            for (int c = 0; c < 9; c++) {
+                isFixed[r][c] = false;
+            }
+        }
 
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
@@ -173,17 +195,15 @@ public class MainActivity extends AppCompatActivity {
                     isFixed[r][c] = true;
                     cell.setClickable(false);
                     cell.setFocusable(false);
-                    cell.setBackgroundColor(0xFFEFEFEF);
+                    cell.setBackgroundColor(getResources().getColor(R.color.surface_variant, getTheme()));  // Светлее surface для fixed
                     tv.setTypeface(null, Typeface.BOLD);
-                    tv.setTextColor(0xFF000000);
                 } else {
                     tv.setText("");
                     isFixed[r][c] = false;
                     cell.setClickable(true);
                     cell.setFocusable(true);
-                    cell.setBackgroundResource(R.drawable.inner_button_selector);
+                    cell.setBackgroundResource(R.drawable.inner_button_selector);  // Уже theme-aware
                     tv.setTypeface(null, Typeface.NORMAL);
-                    tv.setTextColor(0xFF000000);
                 }
             }
         }
@@ -194,85 +214,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupMenu() {
-        if (btnMenu == null) return;
-        btnMenu.setOnClickListener(v -> {
-            android.widget.PopupMenu popup = new android.widget.PopupMenu(MainActivity.this, v);
-            popup.getMenu().add(getString(R.string.restart));
-            popup.getMenu().add(getString(R.string.statistics));
-            popup.getMenu().add(getString(R.string.logout));
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setNavigationOnClickListener(v -> {
+                android.widget.PopupMenu popup = new android.widget.PopupMenu(MainActivity.this, v);
+                popup.getMenu().add(getString(R.string.restart));
+                popup.getMenu().add(getString(R.string.statistics));
+                popup.getMenu().add(getString(R.string.logout));
 
-            MenuItem darkTheme = popup.getMenu().add(getString(R.string.dark_theme));
-            darkTheme.setCheckable(true);
-            int currentMode = AppCompatDelegate.getDefaultNightMode();
-            darkTheme.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
+                MenuItem darkTheme = popup.getMenu().add(getString(R.string.dark_theme));
+                darkTheme.setCheckable(true);
+                int currentMode = AppCompatDelegate.getDefaultNightMode();
+                darkTheme.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
 
-            MenuItem eng = popup.getMenu().add(getString(R.string.language_english));
-            MenuItem rus = popup.getMenu().add(getString(R.string.language_russian));
-            eng.setCheckable(true);
-            rus.setCheckable(true);
+                MenuItem eng = popup.getMenu().add(getString(R.string.language_english));
+                MenuItem rus = popup.getMenu().add(getString(R.string.language_russian));
+                eng.setCheckable(true);
+                rus.setCheckable(true);
 
-            SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
-            String currentLocale = prefs.getString("Locale", "en");
-            eng.setChecked(currentLocale.equals("en"));
-            rus.setChecked(currentLocale.equals("ru"));
+                SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
+                String currentLocale = prefs.getString("Locale", "en");
+                eng.setChecked(currentLocale.equals("en"));
+                rus.setChecked(currentLocale.equals("ru"));
 
-            popup.setOnMenuItemClickListener(item -> {
-                String title = item.getTitle().toString();
+                popup.setOnMenuItemClickListener(item -> {
+                    String title = item.getTitle().toString();
 
-                if (title.equals(getString(R.string.restart))){
-                    startNewGame();
-                    Toast.makeText(this, getString(R.string.game_restarted), Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                else if (title.equals(getString(R.string.statistics))){
-                    boolean wasPausedBefore = isPaused;
-                    pauseGame();
-                    showStatisticsDialog(() -> {
-                        if (!wasPausedBefore) resumeGame();
-                    });
-                    return true;
-                } else if (title.equals(getString(R.string.logout))){
-                    logOut();
-                } else if (title.equals(getString(R.string.dark_theme))){
-                    boolean isDarkNow = darkTheme.isChecked();
-                    boolean newIsDark = !isDarkNow;
+                    if (title.equals(getString(R.string.restart))) {
+                        startNewGame();
+                        Toast.makeText(this, getString(R.string.game_restarted), Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else if (title.equals(getString(R.string.statistics))) {
+                        boolean wasPausedBefore = isPaused;
+                        pauseGame();
+                        showStatisticsDialog(() -> {
+                            if (!wasPausedBefore) resumeGame();
+                        });
+                        return true;
+                    } else if (title.equals(getString(R.string.logout))) {
+                        logOut();
+                    } else if (title.equals(getString(R.string.dark_theme))) {
+                        boolean isDarkNow = darkTheme.isChecked();
+                        boolean newIsDark = !isDarkNow;
 
-                    darkTheme.setChecked(newIsDark);
-                    SharedPreferences prefsTheme = getSharedPreferences("Prefs", MODE_PRIVATE);
-                    prefsTheme.edit().putInt("night_mode", newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO).apply();
-                    AppCompatDelegate.setDefaultNightMode(newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-                    recreate();
+                        darkTheme.setChecked(newIsDark);
+                        SharedPreferences prefsTheme = getSharedPreferences("Prefs", MODE_PRIVATE);
+                        prefsTheme.edit().putInt("night_mode", newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO).apply();
+                        AppCompatDelegate.setDefaultNightMode(newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                        recreate();
 
-                    if (newIsDark) {
-                        Toast.makeText(MainActivity.this, getString(R.string.dark_theme_enabled), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, getString(R.string.light_theme_enabled), Toast.LENGTH_SHORT).show();
+                        if (newIsDark) {
+                            Toast.makeText(MainActivity.this, getString(R.string.dark_theme_enabled), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, getString(R.string.light_theme_enabled), Toast.LENGTH_SHORT).show();
+                        }
+                        return true;
+                    } else if (title.equals(getString(R.string.language_english))) {
+                        setLocale("en");
+                        Toast.makeText(this, getString(R.string.language_english), Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else if (title.equals(getString(R.string.language_russian))) {
+                        setLocale("ru");
+                        Toast.makeText(this, getString(R.string.language_russian), Toast.LENGTH_SHORT).show();
+                        return true;
                     }
-                    return true;
-                } else if (title.equals(getString(R.string.language_english))) {
-                    setLocale("en");
-                    Toast.makeText(this, getString(R.string.language_english), Toast.LENGTH_SHORT).show();  // "Language: English"
-                    return true;
-                } else if (title.equals(getString(R.string.language_russian))){
-                    setLocale("ru");
-                    Toast.makeText(this, getString(R.string.language_russian), Toast.LENGTH_SHORT).show();  // "Язык: Русский"
-                    return true;
-                }
-                return false;
+                    return false;
+                });
+                popup.show();
             });
-            popup.show();
-        });
+        }
     }
 
-
-    private void setupPauseButton() {
-        if (btnPause == null) return;
-        btnPause.setOnClickListener(v -> {
-            if (isPaused) resumeGame();
-            else pauseGame();
-        });
-        updatePauseIcon();
-    }
 
     private void pauseGame() {
         if (isPaused) return;
@@ -289,8 +301,7 @@ public class MainActivity extends AppCompatActivity {
             pauseOverlay.animate().alpha(1f).setDuration(160).start();
         }
 
-        updatePauseIcon();
-
+        invalidateOptionsMenu();
     }
 
     private void resumeGame() {
@@ -301,24 +312,23 @@ public class MainActivity extends AppCompatActivity {
         isPaused = false;
 
         if (pauseOverlay != null) {
-            pauseOverlay.animate().alpha(0f).setDuration(160).withEndAction(() -> pauseOverlay.setVisibility(View.GONE)).start();
+            pauseOverlay.animate().alpha(0f).setDuration(160).withEndAction(() -> {
+                pauseOverlay.setVisibility(View.GONE);
+            }).start();
         }
 
         topSquare.setVisibility(View.VISIBLE);
         controlPanel.setVisibility(View.VISIBLE);
         setControlsEnabled(true);
-        updatePauseIcon();
-//        Toast.makeText(this, "Продолжено", Toast.LENGTH_SHORT).show();
+
+        invalidateOptionsMenu();
     }
 
-    private void updatePauseIcon() {
-        if (btnPause == null) return;
-        if (isPaused) {
-            btnPause.setImageResource(android.R.drawable.ic_media_play);
-            btnPause.setContentDescription("Resume");
-        } else {
-            btnPause.setImageResource(android.R.drawable.ic_media_pause);
-            btnPause.setContentDescription("Pause");
+    private void updatePauseMenuIcon(Menu menu) {
+        MenuItem pauseItem = menu.findItem(R.id.action_pause);
+        if (pauseItem != null) {
+            pauseItem.setIcon(isPaused ? R.drawable.ic_play : R.drawable.ic_pause);
+            pauseItem.setTitle(isPaused ? "Resume" : getString(R.string.btnPause));
         }
     }
 
@@ -397,7 +407,6 @@ public class MainActivity extends AppCompatActivity {
                         cellParams.setMargins(cellInnerMargin, cellInnerMargin, cellInnerMargin, cellInnerMargin);
                         cell.setLayoutParams(cellParams);
 
-
                         try {
                             cell.setBackgroundResource(R.drawable.inner_button_selector);
                         } catch (Exception ex) {
@@ -407,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                         TextView tv = new TextView(this);
                         tv.setGravity(Gravity.CENTER);
                         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                        tv.setTextColor(0xFF000000);
+                        tv.setTextColor(getResources().getColor(R.color.onSurface, getTheme()));  // Theme-aware
                         cell.addView(tv);
 
                         final int r = globalRow;
@@ -427,8 +436,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //================ ГЕНЕРИМ КНОПКИ ЦИФАРОК ===================
-
     private void setupNumberButtons() {
         for (int i = 1; i <= 9; i++) {
             int resId = getResources().getIdentifier("btnNum" + i, "id", getPackageName());
@@ -438,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
                 btn.setOnClickListener(v -> {
                     if (isPaused) return;
                     if (selectedRow != -1 && selectedCol != -1) {
-                        // запрет на изменение фиксированных ячеек
                         if (isFixed[selectedRow][selectedCol]) {
                             Toast.makeText(this, "Эта ячейка фиксирована", Toast.LENGTH_SHORT).show();
                             return;
@@ -453,8 +459,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-    //================ ГЕНЕРИМ КНОПКУ УДАЛИТЬ ===================
 
     private void setupDeleteButton() {
         if (btnDelete != null) {
@@ -473,9 +477,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //================ ГЕНЕРИМ КНОПКУ ПРОВЕРИТЬ ===================
-
-
     private void setupCheckButton() {
         if (btnCheck != null) {
             btnCheck.setOnClickListener(v -> {
@@ -484,8 +485,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
-    //================ ВЫБОР || ДВИЖЕНИЕ ===================
 
     private void selectCell(int row, int col) {
         if (isPaused) return;
@@ -496,6 +495,7 @@ public class MainActivity extends AppCompatActivity {
         selectedCol = col;
         cells[row][col].setSelected(true);
     }
+
     private int[] findNextEditableCell(int fromRow, int fromCol) {
         int r = fromRow;
         int c = fromCol;
@@ -525,13 +525,45 @@ public class MainActivity extends AppCompatActivity {
             cells[selectedRow][selectedCol].setSelected(false);
             selectCell(next[0], next[1]);
         } else {
-             selectCell(0,0);
+            selectCell(0,0);
         }
     }
 
-    //================ ЧЕКАЕМ РЕШЕНИЕ ===================
+    private void animateErrorCell(TextView cell) {
+        int originalColor = getResources().getColor(R.color.surface, getTheme());
+
+        cell.setBackgroundColor(Color.RED);
+
+        cell.animate()
+                .scaleX(1.5f)
+                .scaleY(1.5f)
+                .setDuration(200)
+                .withEndAction(() -> cell.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(200)
+                        .withEndAction(() -> {
+                            cell.animate()
+                                    .scaleX(1.5f)
+                                    .scaleY(1.5f)
+                                    .setDuration(200)
+                                    .withEndAction(() -> cell.animate()
+                                            .scaleX(1f)
+                                            .scaleY(1f)
+                                            .setDuration(200)
+                                            .withEndAction(() -> {
+                                                cell.setBackgroundColor(originalColor);
+                                                cell.setBackgroundResource(R.drawable.btn_inner_default);
+                                                cell.setTextColor(getResources().getColor(R.color.error, getTheme()));  // Красный текст для ошибки
+                                            })
+                                            .start())
+                                    .start();
+                        })
+                        .start())
+                .start();
+    }
+
     private void checkSolution() {
-        //СТАВИМ ЦВЕТА
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
                 TextView tv = cellTexts[r][c];
@@ -567,7 +599,6 @@ public class MainActivity extends AppCompatActivity {
 
         java.util.Set<String> conflicts = new java.util.HashSet<>();
 
-        // ЧЕКАЕМ СТРОКИ
         for (int r = 0; r < 9; r++) {
             java.util.Map<Integer, Integer> seen = new java.util.HashMap<>();
             for (int c = 0; c < 9; c++) {
@@ -582,7 +613,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // ЧЕКАМЕ КОЛОНКИ
         for (int c = 0; c < 9; c++) {
             java.util.Map<Integer, Integer> seen = new java.util.HashMap<>();
             for (int r = 0; r < 9; r++) {
@@ -597,7 +627,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        // ЧЕКАЕМ БЛОКИ
         for (int br = 0; br < 3; br++) {
             for (int bc = 0; bc < 3; bc++) {
                 java.util.Map<Integer, int[]> seen = new java.util.HashMap<>();
@@ -625,7 +654,9 @@ public class MainActivity extends AppCompatActivity {
                 int r = Integer.parseInt(p[0]);
                 int c = Integer.parseInt(p[1]);
                 TextView tv = cellTexts[r][c];
-                if (tv != null) tv.setTextColor(android.graphics.Color.RED);
+                if (tv != null) {
+                    animateErrorCell(tv);
+                }
             }
             Toast.makeText(this, getString(R.string.errors_found), Toast.LENGTH_LONG).show();
             return;
@@ -658,8 +689,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         prefs.edit()
                 .putBoolean("loggedIn", false)
-                .putString("username", null)
-                .putString("password", null)
                 .apply();
         startActivity(new Intent(this, LoginActivity.class));
         finish();
