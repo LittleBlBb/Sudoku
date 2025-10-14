@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout pauseOverlay;
     private FrameLayout[][] cells = new FrameLayout[9][9];
     private TextView[][] cellTexts = new TextView[9][9];
-    TextView pauseText;
+    private TextView pauseText;
     private boolean[][] isFixed = new boolean[9][9];
 
     private int selectedRow = -1;
@@ -529,8 +530,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void animateErrorCell(TextView cell) {
-        int originalColor = getResources().getColor(R.color.surface, getTheme());
+    private void animateErrorCell(TextView cell, boolean isFixedCell) {
 
         cell.setBackgroundColor(Color.RED);
 
@@ -552,9 +552,13 @@ public class MainActivity extends AppCompatActivity {
                                             .scaleY(1f)
                                             .setDuration(200)
                                             .withEndAction(() -> {
-                                                cell.setBackgroundColor(originalColor);
-                                                cell.setBackgroundResource(R.drawable.btn_inner_default);
-                                                cell.setTextColor(getResources().getColor(R.color.error, getTheme()));  // Красный текст для ошибки
+                                                if(isFixedCell){
+                                                    cell.setBackgroundColor(getResources().getColor(R.color.surface_variant, getTheme()));
+                                                } else {
+                                                    cell.setBackgroundColor(getResources().getColor(R.color.surface, getTheme()));
+                                                    cell.setBackgroundResource(R.drawable.inner_button_selector);
+                                                }
+                                                cell.setTextColor(getResources().getColor(R.color.error, getTheme()));
                                             })
                                             .start())
                                     .start();
@@ -655,7 +659,7 @@ public class MainActivity extends AppCompatActivity {
                 int c = Integer.parseInt(p[1]);
                 TextView tv = cellTexts[r][c];
                 if (tv != null) {
-                    animateErrorCell(tv);
+                    animateErrorCell(tv, isFixed[r][c]);
                 }
             }
             Toast.makeText(this, getString(R.string.errors_found), Toast.LENGTH_LONG).show();
