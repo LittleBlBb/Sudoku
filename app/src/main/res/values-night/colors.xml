@@ -16,4 +16,5 @@
     <color name="surface_variant">#1E1E1E</color>
     <color name="onSurface">#FFFFFF</color>
     <color name="error">#F44336</color>
+    <color name="fixedSurfaceNumber">#FFFFFFFF</color>
 </resources>

@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -31,7 +30,6 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 
 public class MainActivity extends AppCompatActivity {
-
     private GridLayout topSquare;
     private LinearLayout controlPanel;
     private Button btnDelete, btnCheck;
@@ -40,17 +38,122 @@ public class MainActivity extends AppCompatActivity {
     private TextView[][] cellTexts = new TextView[9][9];
     private TextView pauseText;
     private boolean[][] isFixed = new boolean[9][9];
-
     private int selectedRow = -1;
     private int selectedCol = -1;
-
     private int gamesPlayed = 0;
     private int movesMade = 0;
     private long gameStartTimeMillis = 0L;
-
     private boolean isPaused = false;
     private long pauseStartMillis = 0L;
     private long accumulatedPauseMillis = 0L;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
+        int savedMode = prefs.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        AppCompatDelegate.setDefaultNightMode(savedMode);
+
+        setContentView(R.layout.activity_main);
+
+        setSupportActionBar(findViewById(R.id.toolbar));
+        invalidateOptionsMenu();
+
+        pauseOverlay = findViewById(R.id.pauseOverlay);
+        topSquare = findViewById(R.id.topSquare);
+        controlPanel = findViewById(R.id.controlPanelInner);
+        btnDelete = findViewById(R.id.btnDelete);
+        btnCheck = findViewById(R.id.btnCheck);
+        pauseText = findViewById(R.id.pauseText);
+
+        if (pauseOverlay != null) {
+            pauseOverlay.setOnClickListener(v -> resumeGame());
+        }
+        if (pauseText != null) {
+            pauseText.setOnClickListener(v -> resumeGame());
+        }
+
+        pauseOverlay.setVisibility(View.GONE);
+        topSquare.setBackgroundColor(0xFFFFFFFF);
+
+        generateBoard();
+
+        if (savedInstanceState != null) {
+            Object gridObj = savedInstanceState.getSerializable("grid");
+            Object fixedObj = savedInstanceState.getSerializable("fixed");
+
+            if (gridObj instanceof int[][] && fixedObj instanceof boolean[][]) {
+                int[][] grid = (int[][]) gridObj;
+                boolean[][] fixed = (boolean[][]) fixedObj;
+
+                for (int r = 0; r < 9; r++) {
+                    for (int c = 0; c < 9; c++) {
+                        isFixed[r][c] = fixed[r][c];
+                        TextView tv = cellTexts[r][c];
+                        FrameLayout cell = cells[r][c];
+                        if (tv == null || cell == null) continue;
+
+                        int v = grid[r][c];
+                        if (v != 0) {
+                            tv.setText(String.valueOf(v));
+                            if (fixed[r][c]) {
+                                tv.setTypeface(null, Typeface.BOLD);
+                                tv.setTextColor(getResources().getColor(R.color.fixedSurfaceNumber));
+                                cell.setClickable(false);
+                                cell.setBackgroundColor(getResources().getColor(R.color.surface_variant, getTheme()));
+                            } else {
+                                tv.setTypeface(null, Typeface.NORMAL);
+                                tv.setTextColor(getColor(R.color.black));
+                                cell.setClickable(true);
+                                cell.setBackgroundResource(R.drawable.inner_button_selector);
+                            }
+                        } else {
+                            tv.setText("");
+                            cell.setClickable(!fixed[r][c]);
+                            cell.setBackgroundResource(R.drawable.inner_button_selector);
+                        }
+                    }
+                }
+
+                gamesPlayed = savedInstanceState.getInt("gamesPlayed", 0);
+                movesMade = savedInstanceState.getInt("movesMade", 0);
+                gameStartTimeMillis = savedInstanceState.getLong("gameStartTimeMillis", 0L);
+                accumulatedPauseMillis = savedInstanceState.getLong("accumulatedPauseMillis", 0L);
+            }
+        } else {
+            startNewGame();
+        }
+
+        setupNumberButtons();
+        setupDeleteButton();
+        setupCheckButton();
+        setupMenu();
+        setControlsEnabled(true);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        int[][] grid = new int[9][9];
+        boolean[][] fixed = new boolean[9][9];
+
+        for (int r = 0; r < 9; r++) {
+            for (int c = 0; c < 9; c++) {
+                String text = cellTexts[r][c].getText().toString();
+                grid[r][c] = text.isEmpty() ? 0 : Integer.parseInt(text);
+                fixed[r][c] = isFixed[r][c];
+            }
+        }
+
+        outState.putSerializable("grid", grid);
+        outState.putSerializable("fixed", fixed);
+        outState.putInt("gamesPlayed", gamesPlayed);
+        outState.putInt("movesMade", movesMade);
+        outState.putLong("gameStartTimeMillis", gameStartTimeMillis);
+        outState.putLong("accumulatedPauseMillis", accumulatedPauseMillis);
+    }
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -90,42 +193,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
-        int savedMode = prefs.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        AppCompatDelegate.setDefaultNightMode(savedMode);
-
-        setContentView(R.layout.activity_main);
-
-        setSupportActionBar(findViewById(R.id.toolbar));
-        invalidateOptionsMenu();
-
-        pauseOverlay = findViewById(R.id.pauseOverlay);
-        topSquare = findViewById(R.id.topSquare);
-        controlPanel = findViewById(R.id.controlPanelInner);
-        btnDelete = findViewById(R.id.btnDelete);
-        btnCheck = findViewById(R.id.btnCheck);
-        pauseText = findViewById(R.id.pauseText);
-
-        if (pauseOverlay != null) {
-            pauseOverlay.setOnClickListener(v -> resumeGame());
-        }
-        if (pauseText != null) {
-            pauseText.setOnClickListener(v -> resumeGame());
-        }
-
-        pauseOverlay.setVisibility(View.GONE);
-
-        topSquare.setBackgroundColor(0xFFFFFFFF);
-
-        startNewGame();
-
-        setupMenu();
-    }
-
     private void setLocale(String lang) {
         SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
         prefs.edit().putString("Locale", lang).apply();
@@ -145,6 +212,9 @@ public class MainActivity extends AppCompatActivity {
         generateBoard();
 
         loadLevel(1);
+        selectedRow = -1;
+        selectedCol = -1;
+
 
         setupNumberButtons();
         setupDeleteButton();
@@ -152,10 +222,8 @@ public class MainActivity extends AppCompatActivity {
 
         setControlsEnabled(true);
         topSquare.setVisibility(View.VISIBLE);
-        if (pauseOverlay != null) pauseOverlay.setVisibility(View.GONE);
 
-        selectedRow = -1;
-        selectedCol = -1;
+        if (pauseOverlay != null) pauseOverlay.setVisibility(View.GONE);
     }
 
     private void loadLevel(int levelNumber) {
@@ -170,20 +238,17 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
     private void level1() {
         int[][] puzzle = level.LEVEL1.getGrid();
 
         applyPuzzle(puzzle);
     }
-
     private void applyPuzzle(int[][] puzzle) {
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
                 isFixed[r][c] = false;
             }
         }
-
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
                 int v = (puzzle != null) ? puzzle[r][c] : 0;
@@ -417,7 +482,7 @@ public class MainActivity extends AppCompatActivity {
                         TextView tv = new TextView(this);
                         tv.setGravity(Gravity.CENTER);
                         tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                        tv.setTextColor(getResources().getColor(R.color.onSurface, getTheme()));  // Theme-aware
+                        tv.setTextColor(getResources().getColor(R.color.onSurface, getTheme()));
                         cell.addView(tv);
 
                         final int r = globalRow;
@@ -446,15 +511,10 @@ public class MainActivity extends AppCompatActivity {
                 btn.setOnClickListener(v -> {
                     if (isPaused) return;
                     if (selectedRow != -1 && selectedCol != -1) {
-                        if (isFixed[selectedRow][selectedCol]) {
-                            Toast.makeText(this, "Эта ячейка фиксирована", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
                         cellTexts[selectedRow][selectedCol].setText(String.valueOf(number));
+                        cellTexts[selectedRow][selectedCol].setTextColor(getColor(R.color.black));
                         movesMade++;
                         moveToNextCell();
-                    } else {
-                        Toast.makeText(this, "Сначала выберите ячейку", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -571,7 +631,13 @@ public class MainActivity extends AppCompatActivity {
         for (int r = 0; r < 9; r++) {
             for (int c = 0; c < 9; c++) {
                 TextView tv = cellTexts[r][c];
-                if (tv != null) tv.setTextColor(0xFF000000);
+                if (tv != null) {
+                    if (isFixed[r][c]) {
+                        tv.setTextColor(getColor(R.color.fixedSurfaceNumber));
+                    } else {
+                        tv.setTextColor(getColor(R.color.black));
+                    }
+                }
             }
         }
 
