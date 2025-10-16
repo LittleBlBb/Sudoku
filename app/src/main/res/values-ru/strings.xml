@@ -16,6 +16,7 @@
     <string name="dark_theme">темная тема</string>
     <string name="appLogo">Лого приложения</string>
 
+
     <!--    Toasts     -->
     <string name="light_theme_enabled">светлая тема включена</string>
     <string name="dark_theme_enabled">темная тема включена</string>
@@ -23,7 +24,8 @@
     <string name="choose_sheet">сначала выберите ячейку</string>
     <string name="errors_found">Найдены ошибки</string>
     <string name="empty_cells_error">Ошибок не найдено, но есть пустые клетки</string>
-    <string name="correct_decision">Решение верно!</string>
+    <string name="solution_correct">Решение верно!</string>
+    <string name="fixed_cell">Эта ячейка фиксированна!</string>
     <string name="pauseMessage">Игра приостановлена</string>
 
     <!--    Login/RegisterActivity   -->
@@ -40,4 +42,11 @@
     <string name="games_count_statistics">Игры</string>
     <string name="moves_count_statistics">Ходы</string>
     <string name="game_time_statistics">Время игры</string>
+    <string name="date_statistics">Дата</string>
+    <string name="time_statistics">Время</string>
+    <string name="result_statistics">Результат</string>
+    <string name="result_win_statistics">Победа</string>
+    <string name="result_abandoned_statistics">Игра покинута</string>
+    <string name="game_from_statistics">Игра от</string>
+    <string name="statistics_by_games">Статистика по играм</string>
 </resources>

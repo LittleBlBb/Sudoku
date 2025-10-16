@@ -1,6 +1,8 @@
 package com.example.sudoku2;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
@@ -50,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
         int savedMode = prefs.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
@@ -261,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
                     isFixed[r][c] = true;
                     cell.setClickable(false);
                     cell.setFocusable(false);
-                    cell.setBackgroundColor(getResources().getColor(R.color.surface_variant, getTheme()));  // Светлее surface для fixed
+                    cell.setBackgroundColor(getResources().getColor(R.color.surface_variant, getTheme()));
                     tv.setTypeface(null, Typeface.BOLD);
                 } else {
                     tv.setText("");
@@ -286,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 android.widget.PopupMenu popup = new android.widget.PopupMenu(MainActivity.this, v);
                 popup.getMenu().add(getString(R.string.restart));
                 popup.getMenu().add(getString(R.string.statistics));
+                popup.getMenu().add(getString(R.string.statistics_by_games));
                 popup.getMenu().add(getString(R.string.logout));
 
                 MenuItem darkTheme = popup.getMenu().add(getString(R.string.dark_theme));
@@ -317,6 +324,9 @@ public class MainActivity extends AppCompatActivity {
                             if (!wasPausedBefore) resumeGame();
                         });
                         return true;
+                    } else if (title.equals(getString(R.string.statistics_by_games))) {
+                            pauseGame();
+                            showStatisticsActivity();
                     } else if (title.equals(getString(R.string.logout))) {
                         logOut();
                     } else if (title.equals(getString(R.string.dark_theme))) {
@@ -351,6 +361,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showStatisticsActivity(){
+        Intent intent = new Intent(MainActivity.this, StatisticsActivity.class);
+        startActivity(intent);
+    }
 
     private void pauseGame() {
         if (isPaused) return;
@@ -527,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isPaused) return;
                 if (selectedRow != -1 && selectedCol != -1) {
                     if (isFixed[selectedRow][selectedCol]) {
-                        Toast.makeText(this, "Эта ячейка фиксирована", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.fixed_cell), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     cellTexts[selectedRow][selectedCol].setText("");
@@ -735,9 +749,33 @@ public class MainActivity extends AppCompatActivity {
         if (hasEmpty) {
             Toast.makeText(this, getString(R.string.empty_cells_error), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Решение верно!", Toast.LENGTH_LONG).show();
+            onGameFinished(true, ((System.currentTimeMillis() - gameStartTimeMillis) - accumulatedPauseMillis));
         }
     }
+
+    private void onGameFinished(boolean isWin, long time){
+        Toast.makeText(this, getString(R.string.solution_correct), Toast.LENGTH_LONG).show();
+        saveGameResult(isWin, String.valueOf(time));
+    }
+
+    private void saveGameResult(boolean isWin, String time) {
+        SharedPreferences prefs = getSharedPreferences("game_stats", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String date = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                .format(new java.util.Date());
+        int resultId = isWin ? R.string.result_win_statistics : R.string.result_abandoned_statistics;
+
+        String record = date + "|" + time + "|" + resultId;
+
+        Set<String> stats = prefs.getStringSet("stats", new HashSet<>());
+        stats = new HashSet<>(stats);
+        stats.add(record);
+
+        editor.putStringSet("stats", stats);
+        editor.apply();
+    }
+
 
     private void setControlsEnabled(boolean enabled) {
         for (int i = 1; i <= 9; i++) {
@@ -753,7 +791,6 @@ public class MainActivity extends AppCompatActivity {
         float d = getResources().getDisplayMetrics().density;
         return Math.round(dp * d);
     }
-
 
     private void logOut(){
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);

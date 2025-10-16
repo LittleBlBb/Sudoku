@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/tvGameDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Дата: 2025-10-14"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tvGameTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Время: 03:42"
+        android:textSize="14sp"
+        android:textColor="@color/grey" />
+
+    <TextView
+        android:id="@+id/tvGameResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Результат: Победа"
+        android:textSize="14sp"
+        android:textColor="@color/teal_700" />
+
+</LinearLayout>

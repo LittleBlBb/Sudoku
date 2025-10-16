@@ -11,15 +11,15 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="57dp"
         android:background="@color/primary_color"
-        app:navigationIcon="@drawable/ic_menu"
-        app:menu="@menu/main_menu"
-        app:title="@string/app_name"
-        app:titleTextColor="@android:color/white"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/main_menu"
+        app:navigationIcon="@drawable/ic_menu"
+        app:title="@string/app_name"
+        app:titleTextColor="@android:color/white" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/boardCard"
@@ -34,14 +34,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-    <GridLayout
-        android:id="@+id/topSquare"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        android:columnCount="3"
-        android:rowCount="3"
-        android:background="@color/white" />   <!-- ✅ фиксируем -->
+        <GridLayout
+            android:id="@+id/topSquare"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:background="@color/white"
+            android:columnCount="3"
+            android:rowCount="3" />
 </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView

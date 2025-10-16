@@ -24,7 +24,9 @@
     <string name="choose_sheet">first choose sheet</string>
     <string name="errors_found">Errors found</string>
     <string name="empty_cells_error">No errors found, but there are empty cells</string>
-    <string name="correct_decision">The decision is correct!</string>
+    <string name="solution_correct">Solution is correct!</string>
+    <string name="fixed_cell">This cell is fixed!</string>
+
 
     <!--    Login/RegisterActivity   -->
     <string name="createAccount">Create account</string>
@@ -40,5 +42,11 @@
     <string name="games_count_statistics">Games count</string>
     <string name="moves_count_statistics">Moves count</string>
     <string name="game_time_statistics">Game time</string>
-    <string name="loginHint">login</string>
+    <string name="date_statistics">Date</string>
+    <string name="time_statistics">Time</string>
+    <string name="result_statistics">Result</string>
+    <string name="result_win_statistics">Won</string>
+    <string name="result_abandoned_statistics">abandoned</string>
+    <string name="game_from_statistics">Game from</string>
+    <string name="statistics_by_games">Statistics by games</string>
 </resources>

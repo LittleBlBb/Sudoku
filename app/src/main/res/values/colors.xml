@@ -20,4 +20,5 @@
     <color name="onSurface">#000000</color>
     <color name="error">#F44336</color>
     <color name="fixedSurfaceNumber">#FF000000</color>
+    <color name="grey">#D3D3D3</color>
 </resources>
