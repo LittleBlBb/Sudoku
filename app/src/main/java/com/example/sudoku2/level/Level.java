@@ -1,6 +1,6 @@
 package com.example.sudoku2.level;
 
-public enum level {
+public enum Level {
     LEVEL1(new int[][]{
         {8,0,0,0,0,0,0,0,0},
         {0,0,3,6,0,0,0,0,0},
@@ -15,7 +15,7 @@ public enum level {
 
     private final int[][] grid;
 
-    level(int[][] grid) {
+    Level(int[][] grid) {
         this.grid = grid;
     }
 

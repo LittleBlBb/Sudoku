@@ -28,7 +28,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import com.example.sudoku2.level.level;
+import com.example.sudoku2.level.Level;
+import com.example.sudoku2.level.LevelGenerator;
 import com.google.android.material.appbar.MaterialToolbar;
 
 
@@ -217,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 
         generateBoard();
 
-        loadLevel(1);
+        loadLevel(0);
         selectedRow = -1;
         selectedCol = -1;
 
@@ -233,9 +234,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadLevel(int levelNumber) {
+        LevelGenerator levelGenerator = LevelGenerator.getInstance();
         switch (levelNumber){
+            case 0:
+                levelGenerator.generateLevel();
+                applyPuzzle(levelGenerator.getGrid());
+                break;
             case 1:
-                applyPuzzle(level.LEVEL1.getGrid());
+                levelGenerator.setLevel(Level.LEVEL1);
+                applyPuzzle(levelGenerator.getGrid());
                 break;
             case 2:
                 break;
@@ -243,11 +250,6 @@ public class MainActivity extends AppCompatActivity {
                 clearPuzzle();
                 break;
         }
-    }
-    private void level1() {
-        int[][] puzzle = level.LEVEL1.getGrid();
-
-        applyPuzzle(puzzle);
     }
     private void applyPuzzle(int[][] puzzle) {
         for (int r = 0; r < 9; r++) {
@@ -632,7 +634,6 @@ public class MainActivity extends AppCompatActivity {
                                                     cell.setBackgroundColor(getResources().getColor(R.color.surface, getTheme()));
                                                     cell.setBackgroundResource(R.drawable.inner_button_selector);
                                                 }
-                                                cell.setTextColor(getResources().getColor(R.color.error, getTheme()));
                                             })
                                             .start())
                                     .start();
