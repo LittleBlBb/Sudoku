@@ -21,15 +21,20 @@
         </activity>
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".authorization.LoginActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RegisterActivity"
+            android:name=".authorization.RegisterActivity"
             android:exported="false" />
 
         <activity
-            android:name=".StatisticsActivity"
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".statistics.StatisticsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

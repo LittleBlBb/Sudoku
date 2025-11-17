@@ -16,6 +16,12 @@
     <string name="dark_theme">dark theme</string>
     <string name="appLogo">App Logo</string>
     <string name="pauseMessage">Game paused</string>
+    <string name="settings">Settings</string>
+    <string name="sounds">Sounds</string>
+    <string name="share_app">Share app</string>
+    <string name="share_text">Try to play Sudoku! Very cool game!</string>
+    <string name="share_via">Share via</string>
+
 
     <!--    Toasts    -->
     <string name="game_restarted">game restarted</string>

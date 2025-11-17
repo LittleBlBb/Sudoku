@@ -22,15 +22,20 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.example.sudoku2.settings.SettingsActivity;
+import com.example.sudoku2.statistics.StatisticsActivity;
+import com.example.sudoku2.authorization.LoginActivity;
 import com.example.sudoku2.level.Level;
 import com.example.sudoku2.level.LevelGenerator;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -296,21 +301,8 @@ public class MainActivity extends AppCompatActivity {
                 popup.getMenu().add(getString(R.string.statistics));
                 popup.getMenu().add(getString(R.string.statistics_by_games));
                 popup.getMenu().add(getString(R.string.logout));
-
-                MenuItem darkTheme = popup.getMenu().add(getString(R.string.dark_theme));
-                darkTheme.setCheckable(true);
-                int currentMode = AppCompatDelegate.getDefaultNightMode();
-                darkTheme.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
-
-                MenuItem eng = popup.getMenu().add(getString(R.string.language_english));
-                MenuItem rus = popup.getMenu().add(getString(R.string.language_russian));
-                eng.setCheckable(true);
-                rus.setCheckable(true);
-
-                SharedPreferences prefs = getSharedPreferences("Prefs", MODE_PRIVATE);
-                String currentLocale = prefs.getString("Locale", "en");
-                eng.setChecked(currentLocale.equals("en"));
-                rus.setChecked(currentLocale.equals("ru"));
+                popup.getMenu().add(getString(R.string.settings));
+                popup.getMenu().add(getString(R.string.share_app));
 
                 popup.setOnMenuItemClickListener(item -> {
                     String title = item.getTitle().toString();
@@ -319,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
                         startNewGame();
                         Toast.makeText(this, getString(R.string.game_restarted), Toast.LENGTH_SHORT).show();
                         return true;
+
                     } else if (title.equals(getString(R.string.statistics))) {
                         boolean wasPausedBefore = isPaused;
                         pauseGame();
@@ -326,41 +319,40 @@ public class MainActivity extends AppCompatActivity {
                             if (!wasPausedBefore) resumeGame();
                         });
                         return true;
+
                     } else if (title.equals(getString(R.string.statistics_by_games))) {
-                            pauseGame();
-                            showStatisticsActivity();
+                        pauseGame();
+                        showStatisticsActivity();
+                        return true;
+
                     } else if (title.equals(getString(R.string.logout))) {
                         logOut();
-                    } else if (title.equals(getString(R.string.dark_theme))) {
-                        boolean isDarkNow = darkTheme.isChecked();
-                        boolean newIsDark = !isDarkNow;
-
-                        darkTheme.setChecked(newIsDark);
-                        SharedPreferences prefsTheme = getSharedPreferences("Prefs", MODE_PRIVATE);
-                        prefsTheme.edit().putInt("night_mode", newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO).apply();
-                        AppCompatDelegate.setDefaultNightMode(newIsDark ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-                        recreate();
-
-                        if (newIsDark) {
-                            Toast.makeText(MainActivity.this, getString(R.string.dark_theme_enabled), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(MainActivity.this, getString(R.string.light_theme_enabled), Toast.LENGTH_SHORT).show();
-                        }
                         return true;
-                    } else if (title.equals(getString(R.string.language_english))) {
-                        setLocale("en");
-                        Toast.makeText(this, getString(R.string.language_english), Toast.LENGTH_SHORT).show();
+
+                    } else if (title.equals(getString(R.string.settings))) {
+                        pauseGame();
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                         return true;
-                    } else if (title.equals(getString(R.string.language_russian))) {
-                        setLocale("ru");
-                        Toast.makeText(this, getString(R.string.language_russian), Toast.LENGTH_SHORT).show();
+                    } else if (title.equals(getString(R.string.share_app)))
+                    {
+                        shareApp();
                         return true;
                     }
                     return false;
                 });
+
                 popup.show();
             });
         }
+    }
+
+    private void shareApp(){
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text));
+
+        Intent chooser = Intent.createChooser(intent, getString(R.string.share_via));
+        startActivity(chooser);
     }
 
     private void showStatisticsActivity(){

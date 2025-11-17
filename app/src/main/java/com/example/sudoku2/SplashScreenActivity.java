@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.activity.ComponentActivity;
 import androidx.core.splashscreen.SplashScreen;
 
+import com.example.sudoku2.authorization.LoginActivity;
+
 public class SplashScreenActivity extends ComponentActivity {
 
     @Override

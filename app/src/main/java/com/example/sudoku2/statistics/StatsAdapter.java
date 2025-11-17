@@ -1,4 +1,4 @@
-package com.example.sudoku2;
+package com.example.sudoku2.statistics;
 
 import android.annotation.SuppressLint;
 import android.widget.ArrayAdapter;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.example.sudoku2.R;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

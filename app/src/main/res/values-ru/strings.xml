@@ -15,7 +15,11 @@
     <string name="restart">Заново</string>
     <string name="dark_theme">темная тема</string>
     <string name="appLogo">Лого приложения</string>
-
+    <string name="settings">Настройки</string>
+    <string name="sounds">Звуки</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="share_text">Попробуй сыграть в Sudoku! Очень крутая игра!</string>
+    <string name="share_via">Поделиться через</string>
 
     <!--    Toasts     -->
     <string name="light_theme_enabled">светлая тема включена</string>

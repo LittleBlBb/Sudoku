@@ -1,10 +1,12 @@
-package com.example.sudoku2;
+package com.example.sudoku2.authorization;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.sudoku2.MainActivity;
+import com.example.sudoku2.R;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;

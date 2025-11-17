@@ -1,4 +1,4 @@
-package com.example.sudoku2;
+package com.example.sudoku2.statistics;
 
 public class GameStat {
     private final String date;
