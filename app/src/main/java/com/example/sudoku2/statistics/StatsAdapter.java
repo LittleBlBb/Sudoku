@@ -51,11 +51,10 @@ public class StatsAdapter extends ArrayAdapter<GameStat> {
         return String.format("%02d:%02d:%02d",
                 TimeUnit.MILLISECONDS.toHours(longMs),
                 TimeUnit.MILLISECONDS.toMinutes(longMs) -
-                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(longMs)),
+                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(longMs)),
                 TimeUnit.MILLISECONDS.toSeconds(longMs) -
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(longMs)));
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(longMs)));
     }
 
 }
-
 

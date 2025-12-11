@@ -21,7 +21,7 @@
     <string name="share_app">Share app</string>
     <string name="share_text">Try to play Sudoku! Very cool game!</string>
     <string name="share_via">Share via</string>
-
+    <string name="language_russian">russian</string>
 
     <!--    Toasts    -->
     <string name="game_restarted">game restarted</string>

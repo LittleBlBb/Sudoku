@@ -2,13 +2,11 @@ package com.example.sudoku2.statistics;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.sudoku2.R;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -21,18 +19,19 @@ import java.util.Set;
 public class StatisticsActivity extends AppCompatActivity {
 
     private List<GameStat> stats = new ArrayList<>();
+    private LinearLayout statsContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_statistics);
 
         MaterialToolbar toolbar = findViewById(R.id.toolbarStats);
         toolbar.setNavigationOnClickListener(v -> finish());
+
+        statsContainer = findViewById(R.id.statsContainer);
 
         SharedPreferences prefs = getSharedPreferences("game_stats", MODE_PRIVATE);
         Set<String> statsSet = prefs.getStringSet("stats", new HashSet<>());
@@ -44,14 +43,12 @@ public class StatisticsActivity extends AppCompatActivity {
             }
         }
 
-        ListView lvStats = findViewById(R.id.lvStats);
-        StatsAdapter adapter = new StatsAdapter(this, stats);
-        lvStats.setAdapter(adapter);
-
-        lvStats.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
-            GameStat stat = stats.get(position);
-            Toast.makeText(this, getString(R.string.game_from_statistics) + stat.getDate() + ": " + getString(stat.getResultId()), Toast.LENGTH_SHORT).show();
-        });
+        for (GameStat stat : stats) {
+            StatItemFragment fragment = StatItemFragment.newInstance(stat.getDate(),
+                    stat.getResultId() == R.string.result_win_statistics ? getString(R.string.result_win_statistics) : getString(R.string.result_abandoned_statistics));
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.add(statsContainer.getId(), fragment);
+            transaction.commit();
+        }
     }
 }
-

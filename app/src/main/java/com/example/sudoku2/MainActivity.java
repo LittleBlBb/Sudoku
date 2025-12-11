@@ -22,7 +22,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
@@ -35,7 +34,6 @@ import com.example.sudoku2.authorization.LoginActivity;
 import com.example.sudoku2.level.Level;
 import com.example.sudoku2.level.LevelGenerator;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -58,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences prefsTheme = getSharedPreferences("Prefs", MODE_PRIVATE);
+        int nightMode = prefsTheme.getInt("night_mode", AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(nightMode);
+
         super.onCreate(savedInstanceState);
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -792,6 +795,5 @@ public class MainActivity extends AppCompatActivity {
                 .apply();
         startActivity(new Intent(this, LoginActivity.class));
         finish();
-
     }
 }

@@ -4,44 +4,64 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.sudoku2.R;
 
 import java.util.List;
 
-public class SettingsAdapter extends ArrayAdapter<SettingItem> {
-    private final LayoutInflater inflater;
+public class SettingsAdapter extends BaseAdapter {
 
-    public SettingsAdapter(@NonNull Context context, @NonNull List<SettingItem> settings) {
-        super(context, 0, settings);
-        inflater = LayoutInflater.from(context);
+    public interface SwitchListener {
+        void onSwitchChanged(SettingItem item, boolean isChecked);
     }
 
-    @NonNull
+    private final Context context;
+    private final List<SettingItem> items;
+    private final SwitchListener listener;
+
+    public SettingsAdapter(Context context, List<SettingItem> items, SwitchListener listener) {
+        this.context = context;
+        this.items = items;
+        this.listener = listener;
+    }
+
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null)
-            convertView = inflater.inflate(R.layout.list_item_setting, parent, false);
+    public int getCount() {
+        return items.size();
+    }
 
-        SettingItem item = getItem(position);
+    @Override
+    public Object getItem(int position) {
+        return items.get(position);
+    }
 
-        if (item != null) {
-            TextView tvName = convertView.findViewById(R.id.tvSettingName);
-            Switch switchSetting = convertView.findViewById(R.id.switchSetting);
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-            tvName.setText(item.getName());
-            switchSetting.setChecked(item.isEnabled());
-
-            switchSetting.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                item.setEnabled(isChecked);
-            });
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_setting, parent, false);
         }
+
+        SettingItem item = items.get(position);
+        TextView tvName = convertView.findViewById(R.id.tvSettingName);
+        Switch switchSetting = convertView.findViewById(R.id.switchSetting);
+
+        tvName.setText(item.getName());
+        switchSetting.setOnCheckedChangeListener(null);
+        switchSetting.setChecked(item.isEnabled());
+
+        switchSetting.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            item.setEnabled(isChecked);
+            listener.onSwitchChanged(item, isChecked);
+        });
 
         return convertView;
     }

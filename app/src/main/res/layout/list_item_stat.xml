@@ -10,7 +10,7 @@
         android:id="@+id/tvGameDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Дата: 2025-10-14"
+        android:text="@string/date_statistics"
         android:textStyle="bold"
         android:textSize="16sp"
         android:textColor="@color/black" />
@@ -19,7 +19,7 @@
         android:id="@+id/tvGameTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Время: 03:42"
+        android:text="@string/time_statistics"
         android:textSize="14sp"
         android:textColor="@color/grey" />
 
@@ -27,7 +27,7 @@
         android:id="@+id/tvGameResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Результат: Победа"
+        android:text="@string/result_statistics"
         android:textSize="14sp"
         android:textColor="@color/teal_700" />
 
