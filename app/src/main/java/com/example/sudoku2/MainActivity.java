@@ -28,6 +28,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import com.example.sudoku2.database.AppDatabase;
+import com.example.sudoku2.database.GameResult;
+import com.example.sudoku2.database.GameResultDao;
 import com.example.sudoku2.settings.SettingsActivity;
 import com.example.sudoku2.statistics.StatisticsActivity;
 import com.example.sudoku2.authorization.LoginActivity;
@@ -217,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void startNewGame() {
+        if (gameStartTimeMillis > 0) {
+            long currentTime = (System.currentTimeMillis() - gameStartTimeMillis) - accumulatedPauseMillis;
+            if (currentTime < 0) currentTime = 0;
+            saveGameResult(false, String.valueOf(currentTime));
+        }
         gamesPlayed++;
         movesMade = 0;
         gameStartTimeMillis = System.currentTimeMillis();
@@ -229,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
         loadLevel(0);
         selectedRow = -1;
         selectedCol = -1;
-
 
         setupNumberButtons();
         setupDeleteButton();
@@ -253,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
                 applyPuzzle(levelGenerator.getGrid());
                 break;
             case 2:
+                levelGenerator.setLevel(Level.LEVEL0);
+                applyPuzzle(levelGenerator.getGrid());
                 break;
             default:
                 clearPuzzle();
@@ -755,21 +764,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveGameResult(boolean isWin, String time) {
-        SharedPreferences prefs = getSharedPreferences("game_stats", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+        if (userId == -1) return;
 
-        String date = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+        AppDatabase db = AppDatabase.getInstance(this);
+        GameResultDao dao = db.gameResultDao();
+        GameResult result = new GameResult();
+        result.userId = userId;
+        result.date = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
                 .format(new java.util.Date());
-        int resultId = isWin ? R.string.result_win_statistics : R.string.result_abandoned_statistics;
+        result.time = time;
+        result.result = isWin ? R.string.result_win_statistics : R.string.result_abandoned_statistics;
 
-        String record = date + "|" + time + "|" + resultId;
-
-        Set<String> stats = prefs.getStringSet("stats", new HashSet<>());
-        stats = new HashSet<>(stats);
-        stats.add(record);
-
-        editor.putStringSet("stats", stats);
-        editor.apply();
+        dao.insert(result);
     }
 
 

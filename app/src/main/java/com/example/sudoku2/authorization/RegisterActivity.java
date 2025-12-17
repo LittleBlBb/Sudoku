@@ -6,6 +6,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sudoku2.R;
+import com.example.sudoku2.database.AppDatabase;
+import com.example.sudoku2.database.User;
+import com.example.sudoku2.database.UserDao;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -68,12 +71,17 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (!valid) return;
 
-
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        prefs.edit()
-                .putString("username", username)
-                .putString("password", password)
-                .apply();
+        AppDatabase db = AppDatabase.getInstance(this);
+        UserDao dao = db.userDao();
+        User existing = dao.getUserByUsername(username);
+        if (existing != null) {
+            Snackbar.make(v, "User already exists", Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        User user = new User();
+        user.username = username;
+        user.password = password;
+        dao.insert(user);
 
         Snackbar.make(v, getString(R.string.registration_successful), Snackbar.LENGTH_SHORT).show();
 

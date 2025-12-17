@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sudoku2.MainActivity;
 import com.example.sudoku2.R;
+import com.example.sudoku2.database.AppDatabase;
+import com.example.sudoku2.database.User;
+import com.example.sudoku2.database.UserDao;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -57,11 +60,16 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (!valid) return;
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
-        String savedUser = prefs.getString("username", null);
-        String savedPass = prefs.getString("password", null);
-        if (username.equals(savedUser) && password.equals(savedPass)){
-            prefs.edit().putBoolean("loggedIn", true).apply();
+
+        AppDatabase db = AppDatabase.getInstance(this);
+        UserDao dao = db.userDao();
+        User user = dao.getUserByUsername(username);
+        if (user != null && user.password.equals(password)){
+            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            prefs.edit()
+                    .putBoolean("loggedIn", true)
+                    .putInt("userId", user.id)
+                    .apply();
             Snackbar.make(v, getString(R.string.welcome), Snackbar.LENGTH_SHORT).show();
             startActivity(new Intent(this, MainActivity.class));
             finish();

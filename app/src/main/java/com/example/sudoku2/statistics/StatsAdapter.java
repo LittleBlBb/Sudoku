@@ -55,6 +55,4 @@ public class StatsAdapter extends ArrayAdapter<GameStat> {
                 TimeUnit.MILLISECONDS.toSeconds(longMs) -
                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(longMs)));
     }
-
 }
-
